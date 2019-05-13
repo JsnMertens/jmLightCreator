@@ -1,0 +1,4 @@
+.vscode
+*.pyc
+src/resources/ui/*.py
+qt_temp.*
