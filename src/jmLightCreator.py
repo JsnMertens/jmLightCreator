@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-jmLightCreator is a free tool in python I have written for creating lights in Maya.
+jmLightCreator is a free tool in python I have written for easily creating lights in Maya.
 Feel free to use it in your own projects or in production.
 """
 
