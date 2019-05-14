@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-jmLightCreator is a free tool in python I have written for easily creating lights in Maya.
+jmLightCreator is a free tool in python I have written for easily creating lights in Maya with a templated name.
 Feel free to use it in your own projects or in production. (Optimized for MtoA)
 """
 
@@ -67,7 +67,7 @@ class JMLightCreator(MayaQWidgetDockableMixin, QWidget, Ui_widget_root):
         self.setWindowFlags(QtCore.Qt.Tool)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.setupUi(self)
-        
+
         self.pushButton_selected.setIcon(self.icon_select_off)
         self.pushButton_spotLight.setIcon(self.icon_spotlight)
         self.pushButton_pointLight.setIcon(self.icon_pointLight)
@@ -85,7 +85,7 @@ class JMLightCreator(MayaQWidgetDockableMixin, QWidget, Ui_widget_root):
         self.pushButton_aiAreaLight.clicked.connect(partial(self.createLight, "aiAreaLight"))
         self.pushButton_selected.clicked.connect(self.__selectCSS)
         self.comboBox_function.addItems(self.lgt_function)
-        
+
         self.switchLayout(self.PREFERRED_LAYOUT)
         self.__selectCSS()
 
@@ -166,9 +166,9 @@ class JMLightCreator(MayaQWidgetDockableMixin, QWidget, Ui_widget_root):
         if not selected and is_checked:
             _logger.warning("Nothing selected.")
             return None
-        
+
         lenght = len(selected) if is_checked else 1
-        for _ in range(lenght):           
+        for i in range(lenght):
             # Create light
             light_shape = pm.shadingNode(light_type, asLight=True)
             light_transform = light_shape if light_shape.type() == "transform" else light_shape.getParent()
@@ -184,7 +184,7 @@ class JMLightCreator(MayaQWidgetDockableMixin, QWidget, Ui_widget_root):
             function = self.comboBox_function.currentText()
 
             # Get basename
-            basename = None 
+            basename = None
             if is_checked:
                 basename = selected[i].split("_")[0]
             else:
@@ -198,7 +198,7 @@ class JMLightCreator(MayaQWidgetDockableMixin, QWidget, Ui_widget_root):
             while pm.objExists(new_name):
                 index += 1
                 new_name = self.template_name.format(BASENAME=basename, FUNCTION=function, AXE="C", INDEX="%03d" % index, TYPE=suffix)
-                
+
             light_transform.rename(new_name)
 
             # Put light in group

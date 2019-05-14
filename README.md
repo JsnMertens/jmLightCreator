@@ -1,5 +1,5 @@
-# jmLightCreator
-jmLightCreator is a free tool in python I have written for easily creating lights in Maya.
+# jmLightCreator ![logo](https://github.com/JsnMertens/jmLightCreator/blob/master/src/resources/icons/logo_jmLightCreator_32.png)
+jmLightCreator is a free tool in python I have written for easily creating lights in Maya with a templated name.
 Feel free to use it in your own projects or in production. *(Optimized for MtoA)*
 
 ## Installation
@@ -13,3 +13,7 @@ To get it recognize by maya you need to add the following line in the **maya.env
 3. Drag and drop the *"install.py"* file onto the Maya viewport.
 
 Note: **Maya.env** file is located to *C:\Users\USERNAME\Documents\maya\20##\Maya.env*
+
+---
+
+![jmLightCreator UI](https://github.com/JsnMertens/jmLightCreator/blob/master/images/ui_screen.jpg)
