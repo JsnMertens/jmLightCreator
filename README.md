@@ -1,5 +1,5 @@
 # jmLightCreator ![logo](https://github.com/JsnMertens/jmLightCreator/blob/master/src/resources/icons/logo_jmLightCreator_32.png)
-jmLightCreator is a free tool in python I have written for easily creating lights in Maya with a templated name.
+jmLightCreator is a free tool in python I have written for easily creating lights in Maya with a **templated name**.
 Feel free to use it in your own projects or in production. *(Optimized for MtoA)*
 
 ## Installation
