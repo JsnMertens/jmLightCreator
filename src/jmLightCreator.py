@@ -3,7 +3,7 @@
 
 """
 jmLightCreator is a free tool in python I have written for easily creating lights in Maya.
-Feel free to use it in your own projects or in production.
+Feel free to use it in your own projects or in production. (Optimized for MtoA)
 """
 
 from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
@@ -26,7 +26,6 @@ __email__       = 'mertens.jas@gmail.com'
 _mainWindow = None
 _logger = logging.getLogger(__name__)
 
-MAIN_NAME = "jmLightCreator"
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 if PROJECT_DIR not in sys.path:
@@ -147,7 +146,7 @@ class JMLightCreator(MayaQWidgetDockableMixin, QWidget, Ui_widget_root):
             _logger.error("Argument Error")
             return None
 
-    def createLight(self, light_type):
+    def createLight(self, light_type, illuminate_by_default=False):
         """ Create light. """
         # Check input
         if light_type not in self.lgt_type:
@@ -164,15 +163,21 @@ class JMLightCreator(MayaQWidgetDockableMixin, QWidget, Ui_widget_root):
         selected = pm.selected()
 
         # Check selection
-        if not selected:
+        if not selected and is_checked:
             _logger.warning("Nothing selected.")
             return None
         
         lenght = len(selected) if is_checked else 1
-        for i in range(lenght):           
+        for _ in range(lenght):           
             # Create light
             light_shape = pm.shadingNode(light_type, asLight=True)
             light_transform = light_shape if light_shape.type() == "transform" else light_shape.getParent()
+
+            # Break links
+            if not illuminate_by_default:
+                output_ = pm.PyNode("%s.instObjGroups[0]" % light_transform)
+                input_ = pm.PyNode(pm.connectionInfo(output_, dfs=True)[0])
+                output_ // input_
 
             # Get suffix and function
             suffix = self.lgt_suffix[self.lgt_type.index(light_type)]
@@ -232,14 +237,14 @@ def mainWindowClosed():
 def mainWindowChanged():
     """ Hook up callback when the main window is moved and resized. """
     global _mainWindow
-    saveWindowState(_mainWindow, MAIN_NAME + "State")
+    saveWindowState(_mainWindow, __name__ + "State")
 
 def main(restore=False):
     """ Show main Window. """
     global _mainWindow
 
     if not restore:
-        control = MAIN_NAME + "WorkspaceControl"
+        control = __name__ + "WorkspaceControl"
         if pm.workspaceControl(control, q=True, exists=True) and _mainWindow is None:
             pm.workspaceControl(control, e=True, close=True)
             pm.deleteUI(control)
@@ -249,7 +254,7 @@ def main(restore=False):
 
     if _mainWindow is None:
         _mainWindow = JMLightCreator()
-        _mainWindow.setObjectName(MAIN_NAME)
+        _mainWindow.setObjectName(__name__)
 
     if restore:
         mixinPtr = omui.MQtUtil.findControl(_mainWindow.objectName())
@@ -260,5 +265,5 @@ def main(restore=False):
             uiScript='import jmLightCreator\njmLightCreator.main(restore=True)',
             closeCallback='import jmLightCreator\njmLightCreator.mainWindowClosed()' )
 
-    _mainWindow.setWindowTitle(MAIN_NAME)
+    _mainWindow.setWindowTitle(__name__)
     return _mainWindow
