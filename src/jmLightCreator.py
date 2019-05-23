@@ -241,10 +241,12 @@ class JMLightCreator(MayaQWidgetDockableMixin, QWidget, Ui_widget_root):
         if self.pushButton_selected.isChecked():
             self.pushButton_selected.setIcon(self.icon_select_on)
             self.pushButton_selected.setStyleSheet(self.default_stylesheet)
+            self.lineEdit_basename.setReadOnly(True)
 
         else:
             self.pushButton_selected.setIcon(self.icon_select_off)
             self.pushButton_selected.setStyleSheet(self.default_stylesheet)
+            self.lineEdit_basename.setReadOnly(False)
 
 
 def saveWindowState(editor, optionVar):
