@@ -52,12 +52,13 @@ class JMLightCreator(MayaQWidgetDockableMixin, QWidget, Ui_widget_root):
 
     # Icons
     getIcon = lambda icon_name : QtGui.QIcon(os.path.join(PROJECT_DIR, "resources", "icons", icon_name))
+    icon_illuminated_off = getIcon("icon_lightbulb_off.png")
+    icon_illuminated_on = getIcon("icon_lightbulb_on.png")
     icon_select_off = getIcon("icon_select_off.png")
     icon_select_on = getIcon("icon_select_on.png")
     icon_spotlight = getIcon("spotLight.svg")
     icon_pointLight = getIcon("pointLight.svg")
     icon_directionalLight = getIcon("directionalLight.svg")
-    icon_areaLight = getIcon("areaLight.svg")
     icon_aiSkyDomeLight = getIcon("aiSkyDomeLight.svg")
     icon_aiAreaLight = getIcon("aiAreaLight.svg")
     default_stylesheet = "QPushButton::checked{background-color:rgb(97,97,97); color:rgb(255,255,255); border:none}"
@@ -68,22 +69,22 @@ class JMLightCreator(MayaQWidgetDockableMixin, QWidget, Ui_widget_root):
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.setupUi(self)
 
+        self.pushButton_illuminate.setIcon(self.icon_illuminated_on)
         self.pushButton_selected.setIcon(self.icon_select_off)
         self.pushButton_spotLight.setIcon(self.icon_spotlight)
         self.pushButton_pointLight.setIcon(self.icon_pointLight)
         self.pushButton_directionalLight.setIcon(self.icon_directionalLight)
-        self.pushButton_areaLight.setIcon(self.icon_areaLight)
         self.pushButton_aiSkyDomeLight.setIcon(self.icon_aiSkyDomeLight)
         self.pushButton_aiAreaLight.setIcon(self.icon_aiAreaLight)
 
         # Connect Methods to UI
-        self.pushButton_spotLight.clicked.connect(partial(self.createLight, "spotLight"))
-        self.pushButton_pointLight.clicked.connect(partial(self.createLight, "pointLight"))
-        self.pushButton_directionalLight.clicked.connect(partial(self.createLight, "directionalLight"))
-        self.pushButton_areaLight.clicked.connect(partial(self.createLight, "areaLight"))
-        self.pushButton_aiSkyDomeLight.clicked.connect(partial(self.createLight, "aiSkyDomeLight"))
-        self.pushButton_aiAreaLight.clicked.connect(partial(self.createLight, "aiAreaLight"))
+        self.pushButton_illuminate.clicked.connect(self.__illuminateCSS)
         self.pushButton_selected.clicked.connect(self.__selectCSS)
+        self.pushButton_spotLight.clicked.connect(partial(self.createLight, "spotLight"))
+        self.pushButton_directionalLight.clicked.connect(partial(self.createLight, "directionalLight"))
+        self.pushButton_pointLight.clicked.connect(partial(self.createLight, "pointLight"))
+        self.pushButton_aiAreaLight.clicked.connect(partial(self.createLight, "aiAreaLight"))
+        self.pushButton_aiSkyDomeLight.clicked.connect(partial(self.createLight, "aiSkyDomeLight"))
         self.comboBox_function.addItems(self.lgt_function)
 
         self.switchLayout(self.PREFERRED_LAYOUT)
@@ -110,43 +111,55 @@ class JMLightCreator(MayaQWidgetDockableMixin, QWidget, Ui_widget_root):
     def switchLayout(self, layout):
         """ Switch btw Horizontal, vertical and grid layout. """
         if layout == "grid":
-            self.gridLayout_button.addWidget(self.pushButton_selected, 0, 0)
+            self.gridLayout_button.addWidget(self.pushButton_illuminate, 0, 0)
             self.gridLayout_button.addWidget(self.lineEdit_basename, 0, 1)
             self.gridLayout_button.addWidget(self.comboBox_function, 0, 2, 1, 1)
-            self.gridLayout_button.addWidget(self.pushButton_spotLight, 1, 0)
-            self.gridLayout_button.addWidget(self.pushButton_pointLight, 1, 1)
+            self.gridLayout_button.addWidget(self.pushButton_selected, 1, 0)
+            self.gridLayout_button.addWidget(self.pushButton_spotLight, 1, 1)
             self.gridLayout_button.addWidget(self.pushButton_directionalLight, 1, 2)
-            self.gridLayout_button.addWidget(self.pushButton_areaLight, 2, 0)
-            self.gridLayout_button.addWidget(self.pushButton_aiSkyDomeLight, 2, 1)
-            self.gridLayout_button.addWidget(self.pushButton_aiAreaLight, 2, 2)
+            self.gridLayout_button.addWidget(self.pushButton_pointLight, 2, 0)
+            self.gridLayout_button.addWidget(self.pushButton_aiAreaLight, 2, 1)
+            self.gridLayout_button.addWidget(self.pushButton_aiSkyDomeLight, 2, 2)
 
         elif layout == "horizontal":
-            self.gridLayout_button.addWidget(self.pushButton_selected, 0, 0)
-            self.gridLayout_button.addWidget(self.lineEdit_basename, 0, 1)
-            self.gridLayout_button.addWidget(self.comboBox_function, 0, 2)
-            self.gridLayout_button.addWidget(self.pushButton_spotLight, 0, 3)
-            self.gridLayout_button.addWidget(self.pushButton_pointLight, 0, 4)
+            self.gridLayout_button.addWidget(self.pushButton_illuminate, 0, 0)
+            self.gridLayout_button.addWidget(self.pushButton_selected, 0, 1)
+            self.gridLayout_button.addWidget(self.lineEdit_basename, 0, 2)
+            self.gridLayout_button.addWidget(self.comboBox_function, 0, 3)
+            self.gridLayout_button.addWidget(self.pushButton_spotLight, 0, 4)
             self.gridLayout_button.addWidget(self.pushButton_directionalLight, 0, 5)
-            self.gridLayout_button.addWidget(self.pushButton_areaLight, 0, 6)
-            self.gridLayout_button.addWidget(self.pushButton_aiSkyDomeLight, 0, 7)
-            self.gridLayout_button.addWidget(self.pushButton_aiAreaLight, 0, 8)
+            self.gridLayout_button.addWidget(self.pushButton_pointLight, 0, 6)
+            self.gridLayout_button.addWidget(self.pushButton_aiAreaLight, 0, 7)
+            self.gridLayout_button.addWidget(self.pushButton_aiSkyDomeLight, 0, 8)
 
         elif layout == "vertical":
-            self.gridLayout_button.addWidget(self.pushButton_selected, 0, 0)
-            self.gridLayout_button.addWidget(self.lineEdit_basename, 1, 0)
-            self.gridLayout_button.addWidget(self.comboBox_function, 2, 0)
-            self.gridLayout_button.addWidget(self.pushButton_spotLight, 3, 0)
-            self.gridLayout_button.addWidget(self.pushButton_pointLight, 4, 0)
+            self.gridLayout_button.addWidget(self.pushButton_illuminate, 0, 0)
+            self.gridLayout_button.addWidget(self.pushButton_selected, 1, 0)
+            self.gridLayout_button.addWidget(self.lineEdit_basename, 2, 0)
+            self.gridLayout_button.addWidget(self.comboBox_function, 3, 0)
+            self.gridLayout_button.addWidget(self.pushButton_spotLight, 4, 0)
             self.gridLayout_button.addWidget(self.pushButton_directionalLight, 5, 0)
-            self.gridLayout_button.addWidget(self.pushButton_areaLight, 6, 0)
-            self.gridLayout_button.addWidget(self.pushButton_aiSkyDomeLight, 7, 0)
-            self.gridLayout_button.addWidget(self.pushButton_aiAreaLight, 8, 0)
+            self.gridLayout_button.addWidget(self.pushButton_pointLight, 6, 0)
+            self.gridLayout_button.addWidget(self.pushButton_aiAreaLight, 7, 0)
+            self.gridLayout_button.addWidget(self.pushButton_aiSkyDomeLight, 8, 0)
 
         else:
             _logger.error("Argument Error")
             return None
 
-    def createLight(self, light_type, illuminate_by_default=False):
+    def _wrapperUndoChunck(function):
+        """ Create an undo Chunk and wrap it. """
+        def wrapper(self, *args, **kwargs):
+            try:
+                pm.undoInfo(openChunk=True)
+                function(self, *args, **kwargs)
+            finally:
+                pm.undoInfo(closeChunk=True)
+
+        return wrapper
+
+    @_wrapperUndoChunck
+    def createLight(self, light_type):
         """ Create light. """
         # Check input
         if light_type not in self.lgt_type:
@@ -160,6 +173,7 @@ class JMLightCreator(MayaQWidgetDockableMixin, QWidget, Ui_widget_root):
 
         out = []
         is_checked = self.pushButton_selected.isChecked()
+        illuminate = self.pushButton_illuminate.isChecked()
         selected = pm.selected()
 
         # Check selection
@@ -174,7 +188,7 @@ class JMLightCreator(MayaQWidgetDockableMixin, QWidget, Ui_widget_root):
             light_transform = light_shape if light_shape.type() == "transform" else light_shape.getParent()
 
             # Break links
-            if not illuminate_by_default:
+            if illuminate:
                 output_ = pm.PyNode("%s.instObjGroups[0]" % light_transform)
                 input_ = pm.PyNode(pm.connectionInfo(output_, dfs=True)[0])
                 output_ // input_
@@ -211,6 +225,16 @@ class JMLightCreator(MayaQWidgetDockableMixin, QWidget, Ui_widget_root):
         self.lineEdit_basename.clearFocus()
         _logger.info("Light(s) successfully created.")
         return light_transform
+
+    def __illuminateCSS(self):
+        """ Illuminate look. """
+        if self.pushButton_illuminate.isChecked():
+            self.pushButton_illuminate.setIcon(self.icon_illuminated_off)
+            self.pushButton_illuminate.setStyleSheet(self.default_stylesheet)
+
+        else:
+            self.pushButton_illuminate.setIcon(self.icon_illuminated_on)
+            self.pushButton_illuminate.setStyleSheet(self.default_stylesheet)
 
     def __selectCSS(self):
         """ Select look. """
